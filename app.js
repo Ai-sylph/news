@@ -281,22 +281,28 @@ function renderNews() {
     const container = document.getElementById('news-list-container');
 
     // Filter by selectedDate
-    const filteredNews = newsData.filter(news => news.date === selectedDate);
+    let filteredNews = newsData.filter(news => news.date === selectedDate);
+    let isRandom = false;
+
+    if (filteredNews.length === 0) {
+        // Pick 5 random items
+        const shuffled = [...newsData].sort(() => 0.5 - Math.random());
+        filteredNews = shuffled.slice(0, 5).map(news => ({...news, isRandomlySelected: true}));
+        isRandom = true;
+    }
 
     // スコアでソート (重要度順)
     const sortedNews = [...filteredNews].sort((a, b) => b.importanceScore - a.importanceScore);
 
     let html = '';
 
-    if (sortedNews.length === 0) {
-        html = `
-            <div style="text-align:center; padding: 3rem 1rem; color: var(--text-secondary); background: var(--glass-bg); border-radius: 12px; border: 1px solid var(--glass-border);">
-                <span class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">calendar_today</span>
-                <p>選択された日付のニュースはありません。</p>
+    if (isRandom) {
+        html += `
+            <div style="text-align:center; padding: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary); background: rgba(210, 153, 34, 0.05); border-radius: 12px; border: 1px solid rgba(210, 153, 34, 0.2);">
+                <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem; color: var(--accent-orange);">shuffle</span>
+                選択された日付のニュースがないため、過去の関連記事をランダムに5件表示しています。
             </div>
         `;
-        container.innerHTML = html;
-        return;
     }
 
     sortedNews.forEach((news, index) => {
@@ -311,6 +317,10 @@ function renderNews() {
         } else {
             // 過去ニュースの場合
             dateBadgeHtml = `<span class="date-badge past" title="${dateInfo.displayDate}"><span class="material-symbols-outlined" style="font-size:14px;">history</span>${dateInfo.text}のニュース</span>`;
+        }
+
+        if (news.isRandomlySelected) {
+            dateBadgeHtml += `<span class="date-badge random"><span class="material-symbols-outlined" style="font-size:14px;">shuffle</span>ランダムピックアップ</span>`;
         }
 
         // 3行要約の生成

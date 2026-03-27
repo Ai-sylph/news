@@ -126,13 +126,13 @@ function renderNews() {
 
     // Filter by selectedDate
     let filteredNews = newsData.filter(news => news.date === selectedDate);
-    let isRandom = false;
+    let isFallback = false;
 
-    if (filteredNews.length === 0) {
-        // Pick 5 random items
-        const shuffled = [...newsData].sort(() => 0.5 - Math.random());
-        filteredNews = shuffled.slice(0, 5).map(news => ({...news, isRandomlySelected: true}));
-        isRandom = true;
+    if (filteredNews.length === 0 && newsData.length > 0) {
+        // 最新の日付順にソートして上位10件を取得
+        const sortedByDate = [...newsData].sort((a, b) => new Date(b.date) - new Date(a.date));
+        filteredNews = sortedByDate.slice(0, 10).map(news => ({...news, isFallbackSelected: true}));
+        isFallback = true;
     }
 
     // スコアでソート (重要度順)
@@ -140,11 +140,11 @@ function renderNews() {
 
     let html = '';
 
-    if (isRandom) {
+    if (isFallback) {
         html += `
-            <div style="text-align:center; padding: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary); background: rgba(210, 153, 34, 0.05); border-radius: 12px; border: 1px solid rgba(210, 153, 34, 0.2);">
-                <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem; color: var(--accent-orange);">shuffle</span>
-                選択された日付のニュースがないため、過去の関連記事をランダムに5件表示しています。
+            <div style="text-align:center; padding: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary); background: rgba(47, 129, 247, 0.05); border-radius: 12px; border: 1px solid rgba(47, 129, 247, 0.2);">
+                <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem; color: #79c0ff;">update</span>
+                選択された日付のニュースがないため、現時点での最新ニュースを表示しています。
             </div>
         `;
     }
@@ -163,8 +163,8 @@ function renderNews() {
             dateBadgeHtml = `<span class="date-badge past" title="${dateInfo.displayDate}"><span class="material-symbols-outlined" style="font-size:14px;">history</span>${dateInfo.text}のニュース</span>`;
         }
 
-        if (news.isRandomlySelected) {
-            dateBadgeHtml += `<span class="date-badge random"><span class="material-symbols-outlined" style="font-size:14px;">shuffle</span>ランダムピックアップ</span>`;
+        if (news.isFallbackSelected) {
+            dateBadgeHtml += `<span class="date-badge" style="background: rgba(47, 129, 247, 0.15); color: #79c0ff; border: 1px solid rgba(47, 129, 247, 0.3); margin-left: 0.5rem;"><span class="material-symbols-outlined" style="font-size:14px;">update</span>最新ピックアップ</span>`;
         }
 
         // 3行要約の生成

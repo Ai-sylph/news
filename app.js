@@ -236,12 +236,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     dateEl.value = selectedDate;
 
-    dateEl.addEventListener('change', (e) => {
-        if (e.target.value) {
+    const handleDateChange = (e) => {
+        if (e.target.value && e.target.value !== selectedDate) {
             selectedDate = e.target.value;
             renderNews();
         }
-    });
+    };
+    dateEl.addEventListener('change', handleDateChange);
+    dateEl.addEventListener('input', handleDateChange);
 
     // 全体要約の描画
     renderGlobalSummary();

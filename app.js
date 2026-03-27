@@ -222,12 +222,26 @@ function getFormattedDateInfo(dateStr) {
     }
 }
 
+let selectedDate = '';
+
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
     // 日付設定
     const dateEl = document.getElementById('current-date');
     const today = new Date();
-    dateEl.textContent = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    selectedDate = `${year}-${month}-${day}`;
+    
+    dateEl.value = selectedDate;
+
+    dateEl.addEventListener('change', (e) => {
+        if (e.target.value) {
+            selectedDate = e.target.value;
+            renderNews();
+        }
+    });
 
     // 全体要約の描画
     renderGlobalSummary();
@@ -264,10 +278,24 @@ function renderGlobalSummary() {
 function renderNews() {
     const container = document.getElementById('news-list-container');
 
+    // Filter by selectedDate
+    const filteredNews = newsData.filter(news => news.date === selectedDate);
+
     // スコアでソート (重要度順)
-    const sortedNews = [...newsData].sort((a, b) => b.importanceScore - a.importanceScore);
+    const sortedNews = [...filteredNews].sort((a, b) => b.importanceScore - a.importanceScore);
 
     let html = '';
+
+    if (sortedNews.length === 0) {
+        html = `
+            <div style="text-align:center; padding: 3rem 1rem; color: var(--text-secondary); background: var(--glass-bg); border-radius: 12px; border: 1px solid var(--glass-border);">
+                <span class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">calendar_today</span>
+                <p>選択された日付のニュースはありません。</p>
+            </div>
+        `;
+        container.innerHTML = html;
+        return;
+    }
 
     sortedNews.forEach((news, index) => {
         const rank = index + 1;

@@ -127,12 +127,16 @@ body {
 
 .header-date {
     font-size: 1.1rem;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     font-weight: 500;
     background: var(--glass-bg);
     padding: 0.5rem 1rem;
     border-radius: 8px;
     border: 1px solid var(--glass-border);
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    color-scheme: dark;
 }
 
 /* Global Summary */

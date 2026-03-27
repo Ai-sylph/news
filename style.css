@@ -328,6 +328,26 @@ body {
     border: 1px solid rgba(47, 129, 247, 0.4);
 }
 
+.source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.2);
+}
+
+.source-link:hover {
+    color: #fff;
+    background: rgba(47, 129, 247, 0.2);
+    border-color: rgba(47, 129, 247, 0.4);
+}
+
 .date-badge {
     display: inline-flex;
     align-items: center;
@@ -443,4 +463,66 @@ body {
         gap: 1rem;
         padding: 0.5rem;
     }
+}
+
+/* Instruction Panel */
+.instruction-panel {
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.instruction-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.03);
+    list-style: none; /* remove default arrow */
+}
+.instruction-header::-webkit-details-marker {
+    display: none;
+}
+.instruction-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.instruction-content {
+    padding: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: var(--text-primary);
+}
+
+.code-block {
+    background: #000;
+    padding: 1.25rem;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.code-comment {
+    color: var(--text-secondary);
+}
+
+.code-cmd {
+    color: var(--accent-cyan);
+    font-weight: bold;
+}
+
+.instruction-note {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
 }

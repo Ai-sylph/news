@@ -28,6 +28,27 @@
         </header>
 
         <main class="main-content">
+            <!-- How to update news -->
+            <details class="instruction-panel glass-panel">
+                <summary class="instruction-header">
+                    <span class="material-symbols-outlined">terminal</span>
+                    最新ニュースを手動で収集・更新する方法
+                </summary>
+                <div class="instruction-content">
+                    <p>バックエンドの通信スクリプトを実行することで、指定のメーカー（パナソニック・三菱電機・ダイキン）のサイトから最新のプレスリリース情報を取得し、表示を更新します。</p>
+                    <div class="code-block">
+                        <span class="code-comment"># 初回のみ必要なコマンド</span><br>
+                        <span class="code-cmd">npm install</span><br><br>
+                        <span class="code-comment"># ニュースの最新化コマンド</span><br>
+                        <span class="code-cmd">node scraper.js</span>
+                    </div>
+                    <p class="instruction-note">
+                        <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">info</span>
+                        スクリプトで「収集完了」と表示された後、このページをブラウザでリロード（再読み込み）すると更新が反映されます。
+                    </p>
+                </div>
+            </details>
+
             <!-- Global Impact Summary -->
             <section class="global-summary glass-panel" id="global-summary-container">
                 <!-- JS Inject -->

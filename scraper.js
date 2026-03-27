@@ -44,6 +44,45 @@ const targets = [
             if (link && !link.startsWith('http')) link = 'https://www.daikin.co.jp' + link;
             return { title, dateStr, link };
         }
+    },
+    {
+        name: 'トヨタ自動車',
+        url: 'https://global.toyota/jp/newsroom/',
+        selector: '.c-list--news li, .news-list li, article',
+        parse: ($, el) => {
+            const a = $(el).find('a').first();
+            const dateStr = $(el).find('.date, .time').text().trim() || new Date().toISOString().split('T')[0];
+            const title = $(el).find('.title, .txt, .c-title').text().trim() || a.text().trim();
+            let link = a.attr('href');
+            if (link && !link.startsWith('http')) link = 'https://global.toyota' + link;
+            return { title, dateStr, link };
+        }
+    },
+    {
+        name: '日産自動車',
+        url: 'https://global.nissannews.com/ja-JP',
+        selector: '.news-list-item, article, .release-item',
+        parse: ($, el) => {
+            const a = $(el).find('a').first();
+            const dateStr = $(el).find('time, .date').text().trim() || new Date().toISOString().split('T')[0];
+            const title = $(el).find('h3, .title').text().trim() || a.text().trim();
+            let link = a.attr('href');
+            if (link && !link.startsWith('http')) link = 'https://global.nissannews.com' + link;
+            return { title, dateStr, link };
+        }
+    },
+    {
+        name: 'テスラ',
+        url: 'https://www.tesla.com/ja_jp/blog',
+        selector: '.blog-post-teaser, .views-row',
+        parse: ($, el) => {
+            const a = $(el).find('a').first();
+            const dateStr = $(el).find('.date, .posted-on').text().trim() || new Date().toISOString().split('T')[0];
+            const title = $(el).find('.title, h2, h3').text().trim() || a.text().trim();
+            let link = a.attr('href');
+            if (link && !link.startsWith('http')) link = 'https://www.tesla.com' + link;
+            return { title, dateStr, link };
+        }
     }
 ];
 
@@ -77,6 +116,11 @@ function processNewsItem(item, id) {
         tags.add('management');
         score += 15;
     }
+    if (textToCheck.match(/EV|電気自動車|充電|テスラ|バッテリー|自動運転/i)) {
+        tags.add('site');
+        tags.add('cost');
+        score += 30; // EV関連は重要度を高くする
+    }
     if (tags.size === 0) {
         tags.add('management'); // デフォルト
     }
@@ -84,11 +128,13 @@ function processNewsItem(item, id) {
     score += Math.floor(Math.random() * 10); // UI上で並ぶように少しランダム性を足す
     if (score > 100) score = 100;
 
-    // 3. 3行要約の生成 (擬似生成：タイトルをベースにする)
+    // 3. 5行要約の生成 (擬似生成：タイトルをベースにする)
     const lines = [
-        `${item.name}が新たなニュースリリースを発表しました。`,
-        `「${item.title.substring(0, 40)}${item.title.length > 40 ? '...' : ''}」に関する内容が含まれています。`,
-        `電気工事の現場や${Array.from(tags).map(t => t==='cost'?'コスト管理':t==='safety'?'安全基準':t==='site'?'施工フロー':'プロジェクト管理').join('・')}への影響が注目されます。`
+        `【情報アップデート】${item.name}から電気工事・施工に関わる最新ニュースが発表されました。`,
+        `■ 主要トピック内容:`,
+        `「${item.title.substring(0, 45)}${item.title.length > 45 ? '...' : ''}」に関するリリースです。`,
+        `本件は、電気工事の現場や${Array.from(tags).map(t => t==='cost'?'コスト管理':t==='safety'?'安全基準':t==='site'?'施工フロー':'プロジェクト管理').join('・')}への影響が注目されます。`,
+        `特にEV設備、省エネ機器、次世代技術などの最新動向は、今後の資材手配や見積戦略において重要です。`
     ];
 
     return {
@@ -147,7 +193,7 @@ async function main() {
     // データを加工
     const processedNews = allRawItems.map((item, idx) => processNewsItem(item, idx + 1));
     
-    // 今日の日付のダミー記事もいくつか足しておく（カレンダー選択でヒットするように）
+    // 今日の日付のダミー記事・確実なサンプルを足しておく（カレンダー選択や一覧表示用）
     const today = new Date().toISOString().split('T')[0];
     processedNews.push(processNewsItem({
         name: 'ダイキン',
@@ -161,6 +207,20 @@ async function main() {
         title: '労働安全に配慮した次世代スマートヘルメットの実証実験を開始',
         dateStr: today,
         link: 'https://news.panasonic.com'
+    }, processedNews.length + 1));
+
+    processedNews.push(processNewsItem({
+        name: 'トヨタ自動車',
+        title: '商用EVバン向けの大容量バッテリーモジュールを電気工事車両に導入',
+        dateStr: today,
+        link: 'https://global.toyota/'
+    }, processedNews.length + 1));
+
+    processedNews.push(processNewsItem({
+        name: 'テスラ',
+        title: '次世代EV充電設備「スーパーチャージャー」の国内設置要件を改定、日本向け施工業者ガイドライン公開',
+        dateStr: today,
+        link: 'https://www.tesla.com/ja_jp/'
     }, processedNews.length + 1));
 
 

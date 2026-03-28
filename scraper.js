@@ -125,16 +125,20 @@ function processNewsItem(item, id) {
         tags.add('management'); // デフォルト
     }
 
-    score += Math.floor(Math.random() * 10); // UI上で並ぶように少しランダム性を足す
-    if (score > 100) score = 100;
+    // 3. PREP法を用いた要約の生成 (擬似生成：タイトル・タグ情報をベースにする)
+    const truncatedTitle = item.title.substring(0, 40) + (item.title.length > 40 ? '...' : '');
+    const impactText = Array.from(tags).map(t => {
+        if (t === 'cost') return 'コスト管理';
+        if (t === 'safety') return '安全基準';
+        if (t === 'site') return '現場の施工フロー';
+        return 'プロジェクト管理';
+    }).join('や');
 
-    // 3. 5行要約の生成 (擬似生成：タイトルをベースにする)
     const lines = [
-        `【情報アップデート】${item.name}から電気工事・施工に関わる最新ニュースが発表されました。`,
-        `■ 主要トピック内容:`,
-        `「${item.title.substring(0, 45)}${item.title.length > 45 ? '...' : ''}」に関するリリースです。`,
-        `本件は、電気工事の現場や${Array.from(tags).map(t => t==='cost'?'コスト管理':t==='safety'?'安全基準':t==='site'?'施工フロー':'プロジェクト管理').join('・')}への影響が注目されます。`,
-        `特にEV設備、省エネ機器、次世代技術などの最新動向は、今後の資材手配や見積戦略において重要です。`
+        `【結論】${item.name}より「${truncatedTitle}」が発表されました。`,
+        `【理由】本件は、今後の電気工事において${impactText}を大きく左右する重要なトピックとなるためです。`,
+        `【具体例】例えば、新技術（EV・省エネ等）の導入による部材の変更や、施工安全性を飛躍させる詳細なガイドラインが含まれます。`,
+        `【まとめ】最新動向として本件を確実に把握し、直近の見積もりや機材選定のアップデートに繋げていくことが推奨されます。`
     ];
 
     return {
